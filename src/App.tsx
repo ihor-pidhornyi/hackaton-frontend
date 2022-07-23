@@ -3,22 +3,27 @@ import './App.css'
 import { Button } from '@mui/material'
 import CreateTreeForm from './components/CreateTreeForm/CreateTreeForm'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { Map } from './components/Map/Map'
+import { useJsApiLoader } from '@react-google-maps/api'
 
-declare module '@mui/material/styles' {
-  interface Theme {
-    status: {
-      default: string
-    }
-  }
+const API_KEY = process.env.REACT_APP_API_KEY
 
-  interface ThemeOptions {
-    status?: {
-      default?: string
-    }
-  }
+const center = {
+  lat: 49.23244,
+  lng: 28.484131,
 }
 
+const libraries: [
+  'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
+] = ['places']
+
 function App() {
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: API_KEY ?? '',
+    libraries,
+  })
+
   const theme = createTheme({
     palette: {
       mode: 'dark',
@@ -42,6 +47,8 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      {isLoaded ? <Map center={center} /> : <h2>Loading...</h2>}
+
       <div className="App">
         <h1>Hello we are 4 vesla</h1>
 
