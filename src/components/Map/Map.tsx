@@ -1,9 +1,10 @@
 import { GoogleMap } from '@react-google-maps/api'
-import { useCallback, useRef } from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import { Container } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
 import { defaultTheme } from './Theme'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
+import {useNavigate} from "react-router-dom";
 
 const containerStyle = {
   width: '100%',
@@ -25,8 +26,13 @@ const defaultOptions = {
   styles: defaultTheme,
 }
 
-export const Map = ({ center }: { center: Coordinates }) => {
+export const Map = () => {
   const mapRef = useRef<unknown | undefined>(undefined)
+  const [center, setCenter] = useState<Coordinates>({
+    lat: 49.233083,
+    lng: 28.468217,
+  })
+  const navigate = useNavigate()
 
   const onLoad = useCallback(function callback(map: google.maps.Map) {
     mapRef.current = map
@@ -43,6 +49,14 @@ export const Map = ({ center }: { center: Coordinates }) => {
   },
   [])
 
+  const onValueChanges = useCallback(function callback(value: Coordinates) {
+    setCenter(value)
+  }, [setCenter])
+
+  useEffect(() => {
+    navigate('/'+center.lat+','+center.lng)
+  }, [center])
+
   return (
     <Container>
       <GoogleMap
@@ -54,7 +68,7 @@ export const Map = ({ center }: { center: Coordinates }) => {
         onUnmount={onUnmount}
         onClick={onClick}
       >
-        <MapsAutocomplete />
+        <MapsAutocomplete valueChanges={onValueChanges} />
         {/* Child components, such as markers, info windows, etc. */}
         <></>
       </GoogleMap>

@@ -7,10 +7,6 @@ import { useParams } from 'react-router-dom'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 
-const center = {
-  lat: 49.23244,
-  lng: 28.484131,
-}
 
 const libraries: [
   'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
@@ -39,7 +35,7 @@ export default function HomePage() {
 
   return (
     <div>
-      {isLoaded ? <Map center={center} /> : <h2>Loading...</h2>}
+      {isLoaded ? <Map /> : <h2>Loading...</h2>}
 
       <div className="App">
         <h1>Hello we are 4 vesla</h1>

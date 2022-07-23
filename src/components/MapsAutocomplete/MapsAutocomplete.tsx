@@ -1,13 +1,15 @@
 import * as React from 'react'
-import Box from '@mui/material/Box'
+import { useEffect, useMemo, useState } from 'react'
 import TextField from '@mui/material/TextField'
 import Autocomplete from '@mui/material/Autocomplete'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 // @ts-ignore
 import parse from 'autosuggest-highlight/parse'
-// @ts-ignore
-import throttle  from 'lodash/throttle'
+
+import { getGeocode, getLatLng } from 'use-places-autocomplete'
+import { Coordinates } from '../../shared/models/coordinates'
+import { debounce } from '@mui/material'
 
 const autocompleteService = { current: null }
 
@@ -27,14 +29,18 @@ interface PlaceType {
   structured_formatting: StructuredFormatting
 }
 
-export const MapsAutocomplete = () => {
-  const [value, setValue] = React.useState<PlaceType | null>(null)
-  const [inputValue, setInputValue] = React.useState('')
-  const [options, setOptions] = React.useState<readonly PlaceType[]>([])
+export const MapsAutocomplete = ({
+  valueChanges,
+}: {
+  valueChanges: (value: Coordinates) => void
+}) => {
+  const [value, setValue] = useState<PlaceType | null>(null)
+  const [inputValue, setInputValue] = useState('')
+  const [options, setOptions] = useState<readonly PlaceType[]>([])
 
-  const fetch = React.useMemo(
+  const fetch = useMemo(
     () =>
-      throttle(
+      debounce(
         (
           request: { input: string },
           callback: (results?: readonly PlaceType[]) => void
@@ -44,12 +50,12 @@ export const MapsAutocomplete = () => {
             callback
           )
         },
-        200
+        500
       ),
     []
   )
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true
 
     if (!autocompleteService.current && (window as any).google) {
@@ -101,6 +107,18 @@ export const MapsAutocomplete = () => {
       filterSelectedOptions
       value={value}
       onChange={(event: any, newValue: PlaceType | null) => {
+        if (newValue) {
+          getGeocode({ address: newValue.description })
+            .then((results) => {
+              return getLatLng(results[0])
+            })
+            .then((coordinates: Coordinates) => {
+              valueChanges(coordinates)
+            })
+            .catch((e) => {
+              console.log(e)
+            })
+        }
         setOptions(newValue ? [newValue, ...options] : options)
         setValue(newValue)
       }}
@@ -129,21 +147,22 @@ export const MapsAutocomplete = () => {
                 {/*  component={LocationOnIcon}*/}
                 {/*  sx={{ color: 'text.secondary', mr: 2 }}*/}
                 {/*/>*/}
-                  &nbsp;
+                &nbsp;
               </Grid>
               <Grid item xs>
                 {
                   // @ts-ignore
                   parts.map((part, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      fontWeight: part.highlight ? 700 : 400,
-                    }}
-                  >
-                    {part.text}
-                  </span>
-                ))}
+                    <span
+                      key={index}
+                      style={{
+                        fontWeight: part.highlight ? 700 : 400,
+                      }}
+                    >
+                      {part.text}
+                    </span>
+                  ))
+                }
                 <Typography variant="body2" color="text.secondary">
                   {option.structured_formatting.secondary_text}
                 </Typography>
