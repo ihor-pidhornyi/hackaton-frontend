@@ -4,9 +4,9 @@ import CreateTreeForm from '../../components/CreateTreeForm/CreateTreeForm'
 import { Map } from '../../components/Map/Map'
 import { useJsApiLoader } from '@react-google-maps/api'
 import { useParams } from 'react-router-dom'
+import SideBar from '../../components/SideBar/SideBar'
 
 const API_KEY = process.env.REACT_APP_API_KEY
-
 
 const libraries: [
   'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
@@ -35,6 +35,7 @@ export default function HomePage() {
 
   return (
     <div>
+      <SideBar />
       {isLoaded ? <Map /> : <h2>Loading...</h2>}
 
       <div className="App">
