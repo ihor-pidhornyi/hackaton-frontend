@@ -1,123 +1,144 @@
-import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Dialog, DialogTitle, TextField } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
-import { toast } from "react-toastify";
-
-import { AxiosError } from "axios";
+import React, { useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  MenuItem,
+  Select,
+  TextField,
+} from '@mui/material'
+import { useForm, Controller } from 'react-hook-form'
+import { ErrorMessage } from '@hookform/error-message'
+import { toast } from 'react-toastify'
+import { AxiosError } from 'axios'
 import {
   ErrorText,
   PictureIcon,
   RemoveIcon,
   Wrapper,
-} from "./CreateTreeForm.styled";
-import { createTreeFormFields } from "../../consts/createTreeFormFields";
+} from './CreateTreeForm.styled'
+import { createTreeFormFields } from '../../shared/consts/createTreeFormFields'
 
 enum States {
-  healthy = "HEALTHY",
-  ill = "ILL",
-  bad = "BAD",
+  healthy = 'HEALTHY',
+  ill = 'ILL',
+  bad = 'BAD',
 }
 
+const types = [
+  {
+    id: '1',
+    name: 'Клен',
+  },
+  {
+    id: '2',
+    name: 'Дуб',
+  },
+  {
+    id: '3',
+    name: 'Верба',
+  },
+]
+
 type Type = {
-  description: string;
-  name: string;
-};
+  description: string
+  name: string
+}
 
 type FormData = {
   // x: string;
   // y: string;
-  radius: string;
-  typeId: string;
-  birthDate: string;
-  state: States;
-};
-
-export interface ICreateTreeForm {
-  open: boolean;
-  onClose: (value: string) => void;
+  radius: string
+  typeId: string
+  birthDate: string
+  state: States
 }
 
-const MAX_FILE_SIZE = 1024 * 1024 * 5;
+export interface ICreateTreeForm {
+  open: boolean
+  onClose: (value: string) => void
+}
+
+const MAX_FILE_SIZE = 1024 * 1024 * 5
 
 function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
 
-  const inputEl = useRef<HTMLInputElement | null>(null);
+  const inputEl = useRef<HTMLInputElement | null>(null)
   const {
     reset,
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>()
 
   const getInput = (): HTMLInputElement | null => {
-    return inputEl.current instanceof HTMLInputElement ? inputEl.current : null;
-  };
+    return inputEl.current instanceof HTMLInputElement ? inputEl.current : null
+  }
 
   const getFile = (): File | null => {
-    const input = getInput();
+    const input = getInput()
 
-    return input ? input.files?.[0] ?? null : null;
-  };
+    return input ? input.files?.[0] ?? null : null
+  }
 
   const onFileChange = () => {
-    const input = getInput();
-    const file = getFile();
+    const input = getInput()
+    const file = getFile()
 
     if (file?.size && file?.size > MAX_FILE_SIZE && input) {
-      toast.error("Too large image. Max size is 5mb");
-      input.value = "";
+      toast.error('Too large image. Max size is 5mb')
+      input.value = ''
     } else {
-      const reader = new FileReader();
+      const reader = new FileReader()
 
       reader.onloadend = () => {
-        setImageUrl(typeof reader.result === "string" ? reader.result : null);
-      };
+        setImageUrl(typeof reader.result === 'string' ? reader.result : null)
+      }
 
-      file && reader.readAsDataURL(file);
+      file && reader.readAsDataURL(file)
     }
-  };
+  }
 
   const removeImage = (event: unknown): void => {
-    (event as MouseEvent)?.preventDefault();
-    const input = getInput();
-    if (input) input.value = "";
-    setImageUrl(null);
-  };
+    ;(event as MouseEvent)?.preventDefault()
+    const input = getInput()
+    if (input) input.value = ''
+    setImageUrl(null)
+  }
 
   const submit = async (data: FormData) => {
     try {
-      const formData = new FormData();
+      const formData = new FormData()
 
       // formData.append("x", data.x);
       // formData.append("y", data.y);
-      formData.append("radius", data.radius);
-      formData.append("state", data.state);
-      formData.append("typeId", data.typeId);
-      formData.append("birthDate", data.birthDate);
+      formData.append('radius', data.radius)
+      formData.append('state', data.state)
+      formData.append('typeId', data.typeId)
+      formData.append('birthDate', data.birthDate)
 
-      const file = getFile();
-      file && formData.append("photo", file);
+      const file = getFile()
+      file && formData.append('photo', file)
 
-      reset();
-      const input = getInput();
-      if (input) input.value = "";
-      setImageUrl(null);
+      reset()
+      const input = getInput()
+      if (input) input.value = ''
+      setImageUrl(null)
 
-      toast.success("Created Tree");
+      toast.success('Created Tree')
     } catch (error: unknown) {
-      let message;
-      if (error instanceof AxiosError) message = error?.response?.data?.error;
-      else message = String(error);
-      toast.error(message);
+      let message
+      if (error instanceof AxiosError) message = error?.response?.data?.error
+      else message = String(error)
+      toast.error(message)
     }
-  };
+  }
 
   const handleClose = () => {
-    onClose("");
-  };
+    onClose('')
+  }
 
   return (
     <Dialog onClose={handleClose} open={open}>
@@ -157,8 +178,8 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
 
             <label className="form-item">
               <Controller
-                name={"birthDate"}
-                defaultValue={"2003-05-24"}
+                name={'birthDate'}
+                defaultValue={'2003-05-24'}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField
@@ -172,12 +193,53 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                 )}
               />
             </label>
+
+            <label className="form-item">
+              <Controller
+                name={'state'}
+                defaultValue={States.bad}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    fullWidth={true}
+                    value={value}
+                    label="State"
+                    onChange={onChange}
+                  >
+                    {Object.values(States).map((el) => (
+                      <MenuItem value={el}>{el}</MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </label>
+
+            <label className="form-item">
+              <Controller
+                name={'typeId'}
+                defaultValue={types[0].id}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    fullWidth={true}
+                    value={value}
+                    label="Type of tree"
+                    onChange={onChange}
+                  >
+                    {types.map((type) => (
+                      <MenuItem value={type.id}>{type.name}</MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </label>
+
             <label className="form-item">
               <div className="file-label">Upload a tree photo (Optional):</div>
               <div className="file-content">
                 <div className="preview">
                   <img
-                    src={imageUrl ? imageUrl : "img/image-placeholder.jpg"}
+                    src={imageUrl ? imageUrl : 'img/image-placeholder.jpg'}
                     alt="tree"
                   />
                 </div>
@@ -195,7 +257,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
               {imageUrl ? (
                 <div className="image-path">
                   <div className="image-name">
-                    {getInput()?.value?.replace(/^.*\\/, "") ?? ""}
+                    {getInput()?.value?.replace(/^.*\\/, '') ?? ''}
                   </div>
                   <div onClick={removeImage}>
                     <RemoveIcon />
@@ -209,7 +271,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
               variant="contained"
               type="submit"
               sx={{
-                marginTop: "35px",
+                marginTop: '35px',
               }}
             >
               Create
@@ -218,7 +280,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
         </div>
       </Wrapper>
     </Dialog>
-  );
+  )
 }
 
-export default CreateTreeForm;
+export default CreateTreeForm
