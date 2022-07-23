@@ -97,7 +97,7 @@ export const MapsAutocomplete = ({
   return (
     <Autocomplete
       id="google-map-demo"
-      sx={{ width: 300 }}
+      sx={{ width: 300, position: 'absolute', top: '20px', right: '30px' }}
       getOptionLabel={(option) =>
         typeof option === 'string' ? option : option.description
       }
@@ -127,7 +127,13 @@ export const MapsAutocomplete = ({
         setInputValue(newInputValue)
       }}
       renderInput={(params) => (
-        <TextField {...params} label="Add a location" fullWidth />
+        <TextField
+          sx={{ background: 'white !important' }}
+          variant={'filled'}
+          {...params}
+          label="Add a location"
+          fullWidth
+        />
       )}
       renderOption={(props, option) => {
         const matches =
