@@ -1,11 +1,9 @@
 import React, { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import {
   Autocomplete,
   Button,
   Chip,
   Dialog,
-  DialogTitle,
   MenuItem,
   Select,
   TextField,
@@ -44,8 +42,6 @@ const types = [
 ]
 
 const tasks1 = [432, 4123, 423423, 423, 342, 324]
-
-const fixedOptions = [tasks1[6]]
 
 type Type = {
   description: string
@@ -219,7 +215,9 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                     onChange={onChange}
                   >
                     {Object.values(States).map((el) => (
-                      <MenuItem key={el} value={el}>{el}</MenuItem>
+                      <MenuItem key={el} value={el}>
+                        {el}
+                      </MenuItem>
                     ))}
                   </Select>
                 )}
@@ -239,7 +237,9 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                     onChange={onChange}
                   >
                     {types.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>{type.name}</MenuItem>
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 )}
@@ -249,21 +249,23 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'tasks'}
-                defaultValue={[]}
+                defaultValue={[tasks1[0]]}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Autocomplete
                     fullWidth={true}
                     multiple
                     value={value}
-                    onChange={onChange}
+                    onChange={(event, newValue) => {
+                      onChange(newValue)
+                    }}
                     options={tasks1}
                     getOptionLabel={(option) => option.toString()}
                     renderTags={(tagValue, getTagProps) =>
                       tagValue.map((option, index) => (
                         <Chip
+                          label={option}
                           {...getTagProps({ index })}
-                          disabled={fixedOptions.indexOf(option) !== -1}
                           key={index}
                         />
                       ))
