@@ -157,7 +157,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
       <Wrapper>
         <div className="half">
           <form className="form" onSubmit={handleSubmit(submit)}>
-            <h2 className="title">Register</h2>
+            <h2 className="title">Add tree</h2>
             {createTreeFormFields.map((el) => (
               <label key={el.name} className="form-item">
                 <Controller
@@ -219,7 +219,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                     onChange={onChange}
                   >
                     {Object.values(States).map((el) => (
-                      <MenuItem value={el}>{el}</MenuItem>
+                      <MenuItem key={el} value={el}>{el}</MenuItem>
                     ))}
                   </Select>
                 )}
@@ -239,7 +239,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                     onChange={onChange}
                   >
                     {types.map((type) => (
-                      <MenuItem value={type.id}>{type.name}</MenuItem>
+                      <MenuItem key={type.id} value={type.id}>{type.name}</MenuItem>
                     ))}
                   </Select>
                 )}
@@ -253,8 +253,8 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Autocomplete
+                    fullWidth={true}
                     multiple
-                    id="fixed-tags-demo"
                     value={value}
                     onChange={onChange}
                     options={tasks1}
@@ -264,10 +264,10 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                         <Chip
                           {...getTagProps({ index })}
                           disabled={fixedOptions.indexOf(option) !== -1}
+                          key={index}
                         />
                       ))
                     }
-                    style={{ width: 500 }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -320,7 +320,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                 marginTop: '35px',
               }}
             >
-              Create
+              Add
             </Button>
           </form>
         </div>
