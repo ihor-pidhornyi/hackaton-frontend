@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  Autocomplete,
   Button,
+  Chip,
   Dialog,
   DialogTitle,
   MenuItem,
@@ -41,8 +43,17 @@ const types = [
   },
 ]
 
+const tasks1 = [432, 4123, 423423, 423, 342, 324]
+
+const fixedOptions = [tasks1[6]]
+
 type Type = {
   description: string
+  name: string
+}
+
+type Task = {
+  id: number
   name: string
 }
 
@@ -53,6 +64,7 @@ type FormData = {
   typeId: string
   birthDate: string
   state: States
+  tasks: number[]
 }
 
 export interface ICreateTreeForm {
@@ -230,6 +242,40 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                       <MenuItem value={type.id}>{type.name}</MenuItem>
                     ))}
                   </Select>
+                )}
+              />
+            </label>
+
+            <label className="form-item">
+              <Controller
+                name={'tasks'}
+                defaultValue={[]}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Autocomplete
+                    multiple
+                    id="fixed-tags-demo"
+                    value={value}
+                    onChange={onChange}
+                    options={tasks1}
+                    getOptionLabel={(option) => option.toString()}
+                    renderTags={(tagValue, getTagProps) =>
+                      tagValue.map((option, index) => (
+                        <Chip
+                          {...getTagProps({ index })}
+                          disabled={fixedOptions.indexOf(option) !== -1}
+                        />
+                      ))
+                    }
+                    style={{ width: 500 }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Fixed tag"
+                        placeholder="Favorites"
+                      />
+                    )}
+                  />
                 )}
               />
             </label>
