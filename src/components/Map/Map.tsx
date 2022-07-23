@@ -1,11 +1,11 @@
-import { GoogleMap, InfoBox, Marker } from '@react-google-maps/api'
+import { Circle, GoogleMap, Marker } from '@react-google-maps/api'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Container } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
 import { defaultTheme } from './Theme'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
 import { useNavigate } from 'react-router-dom'
-import { debounce } from '@mui/material'
+import { Button, debounce } from '@mui/material'
 
 const containerStyle = {
   width: '100%',
@@ -29,8 +29,11 @@ const defaultOptions = {
 
 export const Map = () => {
   const mapRef = useRef<google.maps.Map | undefined>(undefined)
-  const [clickCoordinates, setClickCoordinates] =
+  const [createTreeLatLng, setCreateTreeLatLng] =
     useState<google.maps.LatLng | null>(null)
+  const [clickXY, setClickXY] = useState<{ x: number; y: number } | null>(null)
+  const [zoom, setZoom] = useState<number>(15)
+  const [markers, setMarkers] = useState<Coordinates[]>([])
   const [center, setCenter] = useState<Coordinates>({
     lat: 49.233083,
     lng: 28.468217,
@@ -45,13 +48,18 @@ export const Map = () => {
     mapRef.current = undefined
   }, [])
 
-  const onClick = useCallback(function callback(
-    event: google.maps.MapMouseEvent
-  ) {
-    console.log(event.latLng?.toJSON())
-    setClickCoordinates(event.latLng)
-  },
-  [])
+  const onClick = useCallback(
+    function callback(event: google.maps.MapMouseEvent) {
+      setCreateTreeLatLng(event.latLng)
+      console.log()
+      if ('screenX' in event.domEvent) {
+        setClickXY({ x: event.domEvent.screenX, y: event.domEvent.screenY })
+      }
+      const coordinates = event.latLng?.toJSON()
+      coordinates && setMarkers([...markers, coordinates])
+    },
+    [markers, setMarkers]
+  )
 
   const onDebounce = useMemo(
     () =>
@@ -72,7 +80,8 @@ export const Map = () => {
     function callback() {
       if (mapRef.current) {
         onDebounce(() => {
-          console.log('wtf 1')
+          const zoom = mapRef.current?.getZoom()
+          zoom && setZoom(zoom)
         })
       }
     },
@@ -90,17 +99,30 @@ export const Map = () => {
     [onDebounce]
   )
 
+  const openCreateTree = useCallback(
+    function callback() {
+      console.log(createTreeLatLng)
+    },
+    [createTreeLatLng]
+  )
+
   useEffect(() => {
     navigate('/' + center.lat + ',' + center.lng)
   }, [center, navigate])
 
   return (
     <Container>
+      {clickXY && (
+        <Button variant={'contained'} onClick={openCreateTree}>
+          Додати дерево
+        </Button>
+      )}
+
       <GoogleMap
         mapContainerStyle={containerStyle}
         options={defaultOptions}
         center={center}
-        zoom={15}
+        zoom={zoom}
         onLoad={onLoad}
         onUnmount={onUnmount}
         onClick={onClick}
@@ -108,26 +130,15 @@ export const Map = () => {
         onBoundsChanged={onBoundsChanged}
       >
         <MapsAutocomplete valueChanges={onValueChanges} />
-        {/* Child components, such as markers, info windows, etc. */}
-        {clickCoordinates && (
-          <InfoBox
-            // options={{
-            //   boxStyle: {
-            //     img: {
-            //       display: 'none !important',
-            //     },
-            //   },
-            // }}
-            position={clickCoordinates}
-          >
-            <button
-              onClick={(event) => {
-                event.stopPropagation()
-              }}
-            >
-              Додати дерево
-            </button>
-          </InfoBox>
+
+        {createTreeLatLng && <Marker position={createTreeLatLng.toJSON()}/>}
+        
+        {markers.length && (
+          <>
+            {markers.map((coordinates, index) => (
+              <Circle key={index} center={coordinates} radius={5} />
+            ))}
+          </>
         )}
       </GoogleMap>
     </Container>
