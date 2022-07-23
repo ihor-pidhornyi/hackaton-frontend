@@ -1,11 +1,11 @@
 import { GoogleMap } from '@react-google-maps/api'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Container } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
 import { defaultTheme } from './Theme'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
-import {useNavigate} from "react-router-dom";
-import {debounce} from "@mui/material";
+import { useNavigate } from 'react-router-dom'
+import { debounce } from '@mui/material'
 
 const containerStyle = {
   width: '100%',
@@ -50,36 +50,46 @@ export const Map = () => {
   },
   [])
 
-  const onDebounce = useMemo(() =>
-    debounce((callback) => {
-      callback()
-    }, 500),
-      []
+  const onDebounce = useMemo(
+    () =>
+      debounce((callback) => {
+        callback()
+      }, 500),
+    []
   )
 
-  const onValueChanges = useCallback(function callback(value: Coordinates) {
-    setCenter(value)
-  }, [setCenter])
+  const onValueChanges = useCallback(
+    function callback(value: Coordinates) {
+      setCenter(value)
+    },
+    [setCenter]
+  )
 
-  const onZoomChanged = useCallback(function callback() {
-    if (mapRef.current) {
-      onDebounce(() => {
-        console.log('wtf 1')
-      })
-    }
-  }, [])
+  const onZoomChanged = useCallback(
+    function callback() {
+      if (mapRef.current) {
+        onDebounce(() => {
+          console.log('wtf 1')
+        })
+      }
+    },
+    [onDebounce]
+  )
 
-  const onBoundsChanged = useCallback(function callback() {
-    if (mapRef.current) {
-      onDebounce(() => {
-        console.log('wtf 2')
-      })
-    }
-  }, [])
+  const onBoundsChanged = useCallback(
+    function callback() {
+      if (mapRef.current) {
+        onDebounce(() => {
+          console.log(mapRef.current?.getBounds()?.toJSON())
+        })
+      }
+    },
+    [onDebounce]
+  )
 
   useEffect(() => {
-    navigate('/'+center.lat+','+center.lng)
-  }, [center])
+    navigate('/' + center.lat + ',' + center.lng)
+  }, [center, navigate])
 
   return (
     <Container>
