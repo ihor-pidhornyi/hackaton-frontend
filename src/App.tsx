@@ -5,6 +5,8 @@ import CreateTreeForm from './components/CreateTreeForm/CreateTreeForm'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { Map } from './components/Map/Map'
 import { useJsApiLoader } from '@react-google-maps/api'
+import { libraries } from './shared/consts/googleMapsLibraries'
+import { GlobalContextProvider } from './shared/context/GlobalContext'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 
@@ -12,10 +14,6 @@ const center = {
   lat: 49.23244,
   lng: 28.484131,
 }
-
-const libraries: [
-  'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
-] = ['places']
 
 function App() {
   const { isLoaded } = useJsApiLoader({
@@ -26,7 +24,7 @@ function App() {
 
   const theme = createTheme({
     palette: {
-      mode: 'dark',
+      mode: 'light',
       primary: {
         dark: '#9EB23B',
         main: '#C7D36F',
@@ -47,22 +45,24 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {isLoaded ? <Map center={center} /> : <h2>Loading...</h2>}
+      <GlobalContextProvider>
+        {isLoaded ? <Map center={center} /> : <h2>Loading...</h2>}
 
-      <div className="App">
-        <h1>Hello we are 4 vesla</h1>
+        <div className="App">
+          <h1>Hello we are 4 vesla</h1>
 
-        <div>
-          <Button
-            color={'primary'}
-            variant="outlined"
-            onClick={handleClickOpen}
-          >
-            Open simple dialog
-          </Button>
-          <CreateTreeForm open={open} onClose={handleClose} />
+          <div>
+            <Button
+              color={'primary'}
+              variant="outlined"
+              onClick={handleClickOpen}
+            >
+              Open simple dialog
+            </Button>
+            <CreateTreeForm open={open} onClose={handleClose} />
+          </div>
         </div>
-      </div>
+      </GlobalContextProvider>
     </ThemeProvider>
   )
 }
