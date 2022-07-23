@@ -1,6 +1,6 @@
-import { Circle, GoogleMap, Marker } from '@react-google-maps/api'
+import { GoogleMap, Marker } from '@react-google-maps/api'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Container } from './Map.styled'
+import { CloseButton, Container, CreateTree } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
 import { defaultTheme } from './Theme'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
@@ -108,14 +108,30 @@ export const Map = () => {
 
   useEffect(() => {
     navigate('/' + center.lat + ',' + center.lng)
+    setClickXY(null)
+    setCreateTreeLatLng(null)
   }, [center, navigate])
 
   return (
     <Container>
       {clickXY && (
-        <Button variant={'contained'} onClick={openCreateTree}>
-          Додати дерево
-        </Button>
+        <CreateTree x={clickXY.x} y={clickXY.y}>
+          <Button variant={'contained'} onClick={openCreateTree}>
+            Додати дерево
+          </Button>
+          <Button
+            sx={{
+              marginLeft: '.5rem',
+              height: '40px',
+              display: 'inline-block'
+            }}
+            endIcon={<CloseButton />}
+            onClick={() => {
+              setClickXY(null)
+              setCreateTreeLatLng(null)
+            }}
+          />
+        </CreateTree>
       )}
 
       <GoogleMap
@@ -131,15 +147,15 @@ export const Map = () => {
       >
         <MapsAutocomplete valueChanges={onValueChanges} />
 
-        {createTreeLatLng && <Marker position={createTreeLatLng.toJSON()}/>}
-        
-        {markers.length && (
-          <>
-            {markers.map((coordinates, index) => (
-              <Circle key={index} center={coordinates} radius={5} />
-            ))}
-          </>
-        )}
+        {createTreeLatLng && <Marker position={createTreeLatLng.toJSON()} />}
+
+        {/*{markers.length && (*/}
+        {/*  <>*/}
+        {/*    {markers.map((coordinates, index) => (*/}
+        {/*      <Circle key={index} center={coordinates} radius={5} />*/}
+        {/*    ))}*/}
+        {/*  </>*/}
+        {/*)}*/}
       </GoogleMap>
     </Container>
   )

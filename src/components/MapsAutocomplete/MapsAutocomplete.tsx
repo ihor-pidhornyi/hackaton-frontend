@@ -131,7 +131,7 @@ export const MapsAutocomplete = ({
           sx={{ background: 'white !important' }}
           variant={'filled'}
           {...params}
-          label="Add a location"
+          label="Впишіть локацію.."
           fullWidth
         />
       )}
@@ -166,7 +166,7 @@ export const MapsAutocomplete = ({
                     </span>
                   ))
                 }
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary">ивифвфи
                   {option.structured_formatting.secondary_text}
                 </Typography>
               </Grid>
