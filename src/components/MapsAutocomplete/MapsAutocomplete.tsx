@@ -7,7 +7,8 @@ import Typography from '@mui/material/Typography'
 // @ts-ignore
 import parse from 'autosuggest-highlight/parse'
 // @ts-ignore
-import throttle  from 'lodash/throttle'
+import throttle from 'lodash/throttle'
+import { SearchIcon } from './MapsAutocomplete.styled'
 
 const autocompleteService = { current: null }
 
@@ -125,25 +126,22 @@ export const MapsAutocomplete = () => {
           <li {...props}>
             <Grid container alignItems="center">
               <Grid item>
-                {/*<Box*/}
-                {/*  component={LocationOnIcon}*/}
-                {/*  sx={{ color: 'text.secondary', mr: 2 }}*/}
-                {/*/>*/}
-                  &nbsp;
+                <SearchIcon />
               </Grid>
               <Grid item xs>
                 {
                   // @ts-ignore
                   parts.map((part, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      fontWeight: part.highlight ? 700 : 400,
-                    }}
-                  >
-                    {part.text}
-                  </span>
-                ))}
+                    <span
+                      key={index}
+                      style={{
+                        fontWeight: part.highlight ? 700 : 400,
+                      }}
+                    >
+                      {part.text}
+                    </span>
+                  ))
+                }
                 <Typography variant="body2" color="text.secondary">
                   {option.structured_formatting.secondary_text}
                 </Typography>

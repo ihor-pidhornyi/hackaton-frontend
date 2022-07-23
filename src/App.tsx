@@ -5,14 +5,8 @@ import { GlobalContextProvider } from './shared/context/GlobalContext'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage/HomePage'
 import TreesPage from './pages/TreesPage/TreesPage'
-
-
-const API_KEY = process.env.REACT_APP_API_KEY
-
-const center = {
-  lat: 49.23244,
-  lng: 28.484131,
-}
+import RegisterPage from './pages/RegisterPage/RegisterPage'
+import LoginPage from './pages/LoginPage/LoginPage'
 
 function App() {
   const theme = createTheme({
@@ -32,6 +26,8 @@ function App() {
         <Router>
           <Routes>
             <Route path="/trees" element={<TreesPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/:x,:y" element={<HomePage />} />
             <Route path="/" element={<HomePage />} />
           </Routes>
