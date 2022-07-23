@@ -9,7 +9,7 @@ function Header() {
       <Toolbar variant="dense">
         <NavList>
           <li>
-            <Link to="/users">
+            <Link to="/">
               <HomeIcon />
             </Link>
           </li>
