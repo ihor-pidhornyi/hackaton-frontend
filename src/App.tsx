@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage/HomePage'
 import TreesPage from './pages/TreesPage/TreesPage'
 import RegisterPage from './pages/RegisterPage/RegisterPage'
 import LoginPage from './pages/LoginPage/LoginPage'
+import Header from './components/Header/Header'
 
 function App() {
   const theme = createTheme({
@@ -24,6 +25,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <GlobalContextProvider>
         <Router>
+          <Header />
           <Routes>
             <Route path="/trees" element={<TreesPage />} />
             <Route path="/register" element={<RegisterPage />} />
