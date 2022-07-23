@@ -1,45 +1,44 @@
-import React from "react";
-import "./App.css";
-import { Button } from "@mui/material";
-import CreateTreeForm from "./shared/components/CreateTreeForm/CreateTreeForm";
-import { green } from "@mui/material/colors";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import React from 'react'
+import './App.css'
+import { Button } from '@mui/material'
+import CreateTreeForm from './components/CreateTreeForm/CreateTreeForm'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
-declare module "@mui/material/styles" {
+declare module '@mui/material/styles' {
   interface Theme {
     status: {
-      default: string;
-    };
+      default: string
+    }
   }
-  // allow configuration using `createTheme`
+
   interface ThemeOptions {
     status?: {
-      default?: string;
-    };
+      default?: string
+    }
   }
 }
 
 function App() {
   const theme = createTheme({
     palette: {
-      mode: "dark",
+      mode: 'dark',
       primary: {
-        dark: "#9EB23B",
-        main: "#C7D36F",
-        light: "#FCF9C6",
+        dark: '#9EB23B',
+        main: '#C7D36F',
+        light: '#FCF9C6',
       },
     },
-  });
+  })
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -48,7 +47,7 @@ function App() {
 
         <div>
           <Button
-            color={"primary"}
+            color={'primary'}
             variant="outlined"
             onClick={handleClickOpen}
           >
@@ -58,7 +57,7 @@ function App() {
         </div>
       </div>
     </ThemeProvider>
-  );
+  )
 }
 
-export default App;
+export default App
