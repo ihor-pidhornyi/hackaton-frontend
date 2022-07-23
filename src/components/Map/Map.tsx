@@ -7,6 +7,20 @@ const containerStyle = {
     height: '100%',
 }
 
+const defaultOptions = {
+    panControl: true,
+    zoomControl: true,
+    mapTypeControl: false,
+    scaleControl: false,
+    streetViewControl: false,
+    rotateControl: false,
+    clickableIcons: false,
+    keyboardShortcuts: false,
+    scrollWheel: false,
+    disableDoubleClickZoom: false,
+    fullscreenControl: false
+}
+
 export const Map = ({center}: { center: { lat: number, lng: number } }) => {
 
     const mapRef = useRef<unknown | undefined>(undefined)
@@ -22,6 +36,7 @@ export const Map = ({center}: { center: { lat: number, lng: number } }) => {
     return (
         <Container><GoogleMap
                 mapContainerStyle={containerStyle}
+                options={defaultOptions}
                 center={center}
                 zoom={15}
                 onLoad={onLoad}

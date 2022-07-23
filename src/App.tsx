@@ -13,15 +13,6 @@ const center = {
   lng: 28.484131,
 }
 
-const defaultOptions = {
-  panControl: true,
-  zoomControl: true,
-  mapTypeControl: false,
-  scaleControl: false,
-  streetViewControl: false,
-  rotateControl: false
-}
-
 const libraries: [
   'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
 ] = ['places']
