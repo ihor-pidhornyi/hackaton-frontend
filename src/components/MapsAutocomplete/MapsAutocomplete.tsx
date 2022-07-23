@@ -10,6 +10,7 @@ import parse from 'autosuggest-highlight/parse'
 import { getGeocode, getLatLng } from 'use-places-autocomplete'
 import { Coordinates } from '../../shared/models/coordinates'
 import { debounce } from '@mui/material'
+import { SearchIcon } from './MapsAutocomplete.styled'
 
 const autocompleteService = { current: null }
 
@@ -143,11 +144,7 @@ export const MapsAutocomplete = ({
           <li {...props}>
             <Grid container alignItems="center">
               <Grid item>
-                {/*<Box*/}
-                {/*  component={LocationOnIcon}*/}
-                {/*  sx={{ color: 'text.secondary', mr: 2 }}*/}
-                {/*/>*/}
-                &nbsp;
+                <SearchIcon />
               </Grid>
               <Grid item xs>
                 {
