@@ -1,11 +1,12 @@
-import { GoogleMap } from '@react-google-maps/api'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import { GoogleMap, InfoBox, Marker } from '@react-google-maps/api'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Container } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
 import { defaultTheme } from './Theme'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
-import {useNavigate} from "react-router-dom";
-import {debounce} from "@mui/material";
+import { useNavigate } from 'react-router-dom'
+import { debounce } from '@mui/material'
+import { HomeIcon } from '../Header/Header.styled'
 
 const containerStyle = {
   width: '100%',
@@ -29,6 +30,8 @@ const defaultOptions = {
 
 export const Map = () => {
   const mapRef = useRef<google.maps.Map | undefined>(undefined)
+  const [clickCoordinates, setClickCoordinates] =
+    useState<google.maps.LatLng | null>(null)
   const [center, setCenter] = useState<Coordinates>({
     lat: 49.233083,
     lng: 28.468217,
@@ -47,19 +50,24 @@ export const Map = () => {
     event: google.maps.MapMouseEvent
   ) {
     console.log(event.latLng?.toJSON())
+    setClickCoordinates(event.latLng)
   },
   [])
 
-  const onDebounce = useMemo(() =>
-    debounce((callback) => {
-      callback()
-    }, 500),
-      []
+  const onDebounce = useMemo(
+    () =>
+      debounce((callback) => {
+        callback()
+      }, 500),
+    []
   )
 
-  const onValueChanges = useCallback(function callback(value: Coordinates) {
-    setCenter(value)
-  }, [setCenter])
+  const onValueChanges = useCallback(
+    function callback(value: Coordinates) {
+      setCenter(value)
+    },
+    [setCenter]
+  )
 
   const onZoomChanged = useCallback(function callback() {
     if (mapRef.current) {
@@ -78,7 +86,7 @@ export const Map = () => {
   }, [])
 
   useEffect(() => {
-    navigate('/'+center.lat+','+center.lng)
+    navigate('/' + center.lat + ',' + center.lng)
   }, [center])
 
   return (
@@ -96,7 +104,26 @@ export const Map = () => {
       >
         <MapsAutocomplete valueChanges={onValueChanges} />
         {/* Child components, such as markers, info windows, etc. */}
-        <></>
+        {clickCoordinates && (
+          <InfoBox
+            // options={{
+            //   boxStyle: {
+            //     img: {
+            //       display: 'none !important',
+            //     },
+            //   },
+            // }}
+            position={clickCoordinates}
+          >
+            <button
+              onClick={(event) => {
+                event.stopPropagation()
+              }}
+            >
+              Додати дерево
+            </button>
+          </InfoBox>
+        )}
       </GoogleMap>
     </Container>
   )
