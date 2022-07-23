@@ -6,15 +6,32 @@ import { ErrorMessage } from "@hookform/error-message";
 import { toast } from "react-toastify";
 
 import { AxiosError } from "axios";
+import {
+  ErrorText,
+  PictureIcon,
+  RemoveIcon,
+  Wrapper,
+} from "./CreateTreeForm.styled";
+import { createTreeFormFields } from "../../consts/createTreeFormFields";
+
+enum States {
+  healthy = "HEALTHY",
+  ill = "ILL",
+  bad = "BAD",
+}
+
+type Type = {
+  description: string;
+  name: string;
+};
 
 type FormData = {
-  name: string;
-  surname: string;
-  email: string;
-  phoneNumber: string;
+  // x: string;
+  // y: string;
+  radius: string;
+  typeId: string;
   birthDate: string;
-  password: string;
-  repeatPassword: string;
+  state: States;
 };
 
 export interface ICreateTreeForm {
@@ -24,7 +41,7 @@ export interface ICreateTreeForm {
 
 const MAX_FILE_SIZE = 1024 * 1024 * 5;
 
-function CreateTreeForm({open, onClose}: ICreateTreeForm) {
+function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const inputEl = useRef<HTMLInputElement | null>(null);
@@ -74,16 +91,11 @@ function CreateTreeForm({open, onClose}: ICreateTreeForm) {
     try {
       const formData = new FormData();
 
-      if (data.password !== data.repeatPassword) {
-        toast.error("Passwords are not the same");
-        return;
-      }
-
-      formData.append("name", data.name);
-      formData.append("surname", data.surname);
-      formData.append("email", data.email);
-      formData.append("phoneNumber", data.phoneNumber);
-      formData.append("password", data.password);
+      // formData.append("x", data.x);
+      // formData.append("y", data.y);
+      formData.append("radius", data.radius);
+      formData.append("state", data.state);
+      formData.append("typeId", data.typeId);
       formData.append("birthDate", data.birthDate);
 
       const file = getFile();
@@ -94,7 +106,7 @@ function CreateTreeForm({open, onClose}: ICreateTreeForm) {
       if (input) input.value = "";
       setImageUrl(null);
 
-      toast.success("Registered");
+      toast.success("Created Tree");
     } catch (error: unknown) {
       let message;
       if (error instanceof AxiosError) message = error?.response?.data?.error;
@@ -104,112 +116,108 @@ function CreateTreeForm({open, onClose}: ICreateTreeForm) {
   };
 
   const handleClose = () => {
-    onClose('');
+    onClose("");
   };
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>Create tree</DialogTitle>
+      <Wrapper>
+        <div className="half">
+          <form className="form" onSubmit={handleSubmit(submit)}>
+            <h2 className="title">Register</h2>
+            {createTreeFormFields.map((el) => (
+              <label key={el.name} className="form-item">
+                <Controller
+                  name={el.name}
+                  rules={el.validation}
+                  defaultValue={el.defaultValue}
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <>
+                      <TextField
+                        label={el.helpText}
+                        variant="standard"
+                        type={el.type}
+                        onChange={onChange}
+                        value={value}
+                        fullWidth={true}
+                      />
+                      <ErrorMessage
+                        errors={errors}
+                        name={el.name}
+                        render={({ message }: any) => (
+                          <ErrorText>{message}</ErrorText>
+                        )}
+                      />
+                    </>
+                  )}
+                />
+              </label>
+            ))}
+
+            <label className="form-item">
+              <Controller
+                name={"birthDate"}
+                defaultValue={"2003-05-24"}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    label="Birth date"
+                    variant="standard"
+                    type="date"
+                    onChange={onChange}
+                    value={value}
+                    fullWidth={true}
+                  />
+                )}
+              />
+            </label>
+            <label className="form-item">
+              <div className="file-label">Upload a tree photo (Optional):</div>
+              <div className="file-content">
+                <div className="preview">
+                  <img
+                    src={imageUrl ? imageUrl : "img/image-placeholder.jpg"}
+                    alt="tree"
+                  />
+                </div>
+                <div className="upload-file-wrapper">
+                  <PictureIcon />
+                  <input
+                    ref={inputEl}
+                    onChange={onFileChange}
+                    className="input-file"
+                    type="file"
+                    accept="image/*,capture=camera"
+                  />
+                </div>
+              </div>
+              {imageUrl ? (
+                <div className="image-path">
+                  <div className="image-name">
+                    {getInput()?.value?.replace(/^.*\\/, "") ?? ""}
+                  </div>
+                  <div onClick={removeImage}>
+                    <RemoveIcon />
+                  </div>
+                </div>
+              ) : null}
+            </label>
+
+            <Button
+              fullWidth={true}
+              variant="contained"
+              type="submit"
+              sx={{
+                marginTop: "35px",
+              }}
+            >
+              Create
+            </Button>
+          </form>
+        </div>
+      </Wrapper>
     </Dialog>
-
-    // <Wrapper>
-    //   <div className="half">
-    //     <form className="form" onSubmit={handleSubmit(submit)}>
-    //       <h2 className="title">Register</h2>
-    //       {registerFields.map((el) => (
-    //         <label key={el.name} className="form-item">
-    //           <Controller
-    //             name={el.name}
-    //             rules={el.validation}
-    //             defaultValue={el.defaultValue}
-    //             control={control}
-    //             render={({ field: { onChange, value } }) => (
-    //               <>
-    //                 <TextField
-    //                   label={el.helpText}
-    //                   variant="standard"
-    //                   type={el.type}
-    //                   onChange={onChange}
-    //                   value={value}
-    //                   fullWidth={true}
-    //                 />
-    //                 <ErrorMessage
-    //                   errors={errors}
-    //                   name={el.name}
-    //                   render={({ message }: any) => (
-    //                     <ErrorText>{message}</ErrorText>
-    //                   )}
-    //                 />
-    //               </>
-    //             )}
-    //           />
-    //         </label>
-    //       ))}
-
-    //       <label className="form-item">
-    //         <Controller
-    //           name={'birthDate'}
-    //           defaultValue={'2003-05-24'}
-    //           control={control}
-    //           render={({ field: { onChange, value } }) => (
-    //             <TextField
-    //               label="Birth date"
-    //               variant="standard"
-    //               type="date"
-    //               onChange={onChange}
-    //               value={value}
-    //               fullWidth={true}
-    //             />
-    //           )}
-    //         />
-    //       </label>
-    //       <label className="form-item">
-    //         <div className="file-label">Upload a photo (Optional):</div>
-    //         <div className="file-content">
-    //           <div className="preview">
-    //             <img src={imageUrl ? imageUrl : 'img/user-empty.jpg'} />
-    //           </div>
-    //           <div className="upload-file-wrapper">
-    //             <PictureIcon />
-    //             <input
-    //               ref={inputEl}
-    //               onChange={onFileChange}
-    //               className="input-file"
-    //               type="file"
-    //               accept="image/*,capture=camera"
-    //             />
-    //           </div>
-    //         </div>
-    //         {imageUrl ? (
-    //           <div className="image-path">
-    //             <div className="image-name">
-    //               {getInput()?.value?.replace(/^.*\\/, '') ?? ''}
-    //             </div>
-    //             <div onClick={removeImage}>
-    //               <RemoveIcon />
-    //             </div>
-    //           </div>
-    //         ) : null}
-    //       </label>
-
-    //       <Button
-    //         fullWidth={true}
-    //         variant="contained"
-    //         type="submit"
-    //         sx={{
-    //           marginTop: '35px',
-    //         }}
-    //       >
-    //         Sign up
-    //       </Button>
-
-    //       <p>
-    //         Already have an account? <Link to="/login">Sign in</Link>
-    //       </p>
-    //     </form>
-    //   </div>
-    //   <div className="half view">&nbsp;</div>
-    // </Wrapper>
   );
 }
 
