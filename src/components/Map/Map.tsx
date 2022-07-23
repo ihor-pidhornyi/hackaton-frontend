@@ -1,10 +1,11 @@
 import { GoogleMap } from '@react-google-maps/api'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import { Container } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
 import { defaultTheme } from './Theme'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
 import {useNavigate} from "react-router-dom";
+import {debounce} from "@mui/material";
 
 const containerStyle = {
   width: '100%',
@@ -27,7 +28,7 @@ const defaultOptions = {
 }
 
 export const Map = () => {
-  const mapRef = useRef<unknown | undefined>(undefined)
+  const mapRef = useRef<google.maps.Map | undefined>(undefined)
   const [center, setCenter] = useState<Coordinates>({
     lat: 49.233083,
     lng: 28.468217,
@@ -49,9 +50,32 @@ export const Map = () => {
   },
   [])
 
+  const onDebounce = useMemo(() =>
+    debounce((callback) => {
+      callback()
+    }, 500),
+      []
+  )
+
   const onValueChanges = useCallback(function callback(value: Coordinates) {
     setCenter(value)
   }, [setCenter])
+
+  const onZoomChanged = useCallback(function callback() {
+    if (mapRef.current) {
+      onDebounce(() => {
+        console.log('wtf 1')
+      })
+    }
+  }, [])
+
+  const onBoundsChanged = useCallback(function callback() {
+    if (mapRef.current) {
+      onDebounce(() => {
+        console.log('wtf 2')
+      })
+    }
+  }, [])
 
   useEffect(() => {
     navigate('/'+center.lat+','+center.lng)
@@ -67,6 +91,8 @@ export const Map = () => {
         onLoad={onLoad}
         onUnmount={onUnmount}
         onClick={onClick}
+        onZoomChanged={onZoomChanged}
+        onBoundsChanged={onBoundsChanged}
       >
         <MapsAutocomplete valueChanges={onValueChanges} />
         {/* Child components, such as markers, info windows, etc. */}
