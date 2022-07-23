@@ -1,4 +1,4 @@
-import { GoogleMap } from '@react-google-maps/api'
+import { GoogleMap, InfoBox, Marker } from '@react-google-maps/api'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Container } from './Map.styled'
 import { Coordinates } from '../../shared/models/coordinates'
@@ -29,6 +29,8 @@ const defaultOptions = {
 
 export const Map = () => {
   const mapRef = useRef<google.maps.Map | undefined>(undefined)
+  const [clickCoordinates, setClickCoordinates] =
+    useState<google.maps.LatLng | null>(null)
   const [center, setCenter] = useState<Coordinates>({
     lat: 49.233083,
     lng: 28.468217,
@@ -47,6 +49,7 @@ export const Map = () => {
     event: google.maps.MapMouseEvent
   ) {
     console.log(event.latLng?.toJSON())
+    setClickCoordinates(event.latLng)
   },
   [])
 
@@ -106,7 +109,26 @@ export const Map = () => {
       >
         <MapsAutocomplete valueChanges={onValueChanges} />
         {/* Child components, such as markers, info windows, etc. */}
-        <></>
+        {clickCoordinates && (
+          <InfoBox
+            // options={{
+            //   boxStyle: {
+            //     img: {
+            //       display: 'none !important',
+            //     },
+            //   },
+            // }}
+            position={clickCoordinates}
+          >
+            <button
+              onClick={(event) => {
+                event.stopPropagation()
+              }}
+            >
+              Додати дерево
+            </button>
+          </InfoBox>
+        )}
       </GoogleMap>
     </Container>
   )
