@@ -112,7 +112,6 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
     try {
       const formData = new FormData()
 
-      console.log(getDateString(new Date(data.birthDate), true))
       formData.append('x', coords.lat.toString())
       formData.append('y', coords.lng.toString())
       formData.append('radius', data.radius)

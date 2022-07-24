@@ -32,21 +32,25 @@ export default function TreePage() {
       {tree ? (
         <Container>
           <ReturnButton onClick={() => navigate(-1)} />
-          <Image src={tree.photoUrl} />
+          <Image src={tree.photoUrl ?? '/img/image-placeholder.jpg'} />
           <Content>
-            <Name>{`Реєстраційний номер: ${tree.registrationNumber}`}</Name>
+            <Name>{`Реєстраційний номер: ${
+              tree.registrationNumber ?? 'Не вказано'
+            }`}</Name>
             <Characteristiscs>
-              <CharacteristicItem>{`Тип: ${tree.type.name} м`}</CharacteristicItem>
+              <CharacteristicItem>{`Тип: ${tree.type.name}`}</CharacteristicItem>
               <CharacteristicItem>{`Радіус: ${tree.radius} м`}</CharacteristicItem>
               <CharacteristicItem>{`Стан: ${
                 treeStatusMap[tree.state]
               } `}</CharacteristicItem>
-              <CharacteristicItem>{`Вік: ${tree.birthDate} `}</CharacteristicItem>
+              <CharacteristicItem>Дата народження: <br/>{`${tree.birthDate}`}</CharacteristicItem>
             </Characteristiscs>
             <Description>{tree.type.description}</Description>
-            <Tasks>{`Перелік потрібних робіт:${tree.tasks.map(
-              (el) => ' ' + el.name
-            )}`}</Tasks>
+            {tree.tasks.length && (
+              <Tasks>{`Перелік потрібних робіт:${tree.tasks.map(
+                (el) => ' ' + el.name
+              )}`}</Tasks>
+            )}
           </Content>
         </Container>
       ) : (

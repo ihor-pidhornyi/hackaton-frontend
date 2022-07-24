@@ -117,7 +117,7 @@ export const MapsAutocomplete = ({
               valueChanges(coordinates)
             })
             .catch((e) => {
-              console.log(e)
+              console.error(e)
             })
         }
         setOptions(newValue ? [newValue, ...options] : options)

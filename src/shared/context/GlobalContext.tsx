@@ -22,6 +22,8 @@ const GlobalContext = createContext<{
   setTreeTypes: (value: TreeType[]) => void
   trees: TreeShort[]
   setTrees: (value: TreeShort[]) => void
+  filterIpn: string | null
+  setFilterIpn: (value: string | null) => void
 }>({
   token: null,
   setToken: (_) => {},
@@ -32,7 +34,9 @@ const GlobalContext = createContext<{
   treeTypes: [],
   setTreeTypes: (_) => {},
   trees: [],
-  setTrees: (_) => {}
+  setTrees: (_) => {},
+  filterIpn: null,
+  setFilterIpn: (_) => {}
 })
 
 export function GlobalContextProvider({ children }: { children: ReactNode }) {
@@ -41,6 +45,7 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [treeTypes, setTreeTypes] = useState<TreeType[]>([])
   const [trees, setTrees] = useState<TreeShort[]>([])
+  const [filterIpn, setFilterIpn] = useState<string | null>(null)
 
   useEffect(() => {
     setToken(JSON.parse(localStorage.getItem('token') ?? JSON.stringify(null)))
@@ -64,6 +69,8 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
       setTreeTypes,
       trees,
       setTrees,
+      filterIpn,
+      setFilterIpn
     }),
     [
       token,
@@ -76,6 +83,8 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
       setTreeTypes,
       trees,
       setTrees,
+      filterIpn,
+      setFilterIpn
     ]
   )
 

@@ -42,7 +42,7 @@ const defaultOptions = {
 }
 
 export const Map = ({ handleCreateTree }: any) => {
-  const { trees, setTrees } = useGlobalContext()
+  const { trees, setTrees, filterIpn, setFilterIpn } = useGlobalContext()
   const mapRef = useRef<google.maps.Map | undefined>(undefined)
   const [createTreeLatLng, setCreateTreeLatLng] =
     useState<google.maps.LatLng | null>(null)
@@ -73,20 +73,38 @@ export const Map = ({ handleCreateTree }: any) => {
   [])
 
   const fetch = useCallback(
-    (bounds: google.maps.LatLngBoundsLiteral) => {
+    (
+      bounds: google.maps.LatLngBoundsLiteral | null,
+      filterIpn: string | null
+    ) => {
+      let params = {}
 
-      const startY = Math.min(bounds.west, bounds.east)
-      const startX= Math.min(bounds.north, bounds.south)
-      const endY = Math.max(bounds.west, bounds.east)
-      const endX = Math.max(bounds.north, bounds.south)
+      if (!filterIpn && bounds) {
+        const startY = Math.min(bounds.west, bounds.east)
+        const startX = Math.min(bounds.north, bounds.south)
+        const endY = Math.max(bounds.west, bounds.east)
+        const endX = Math.max(bounds.north, bounds.south)
+
+        params = { startY, startX, endY, endX }
+      } else if (!bounds && filterIpn) {
+        params = { registration_number: filterIpn }
+      } else {
+        return
+      }
 
       API.get<TreeShort[]>('/trees', {
-        params: { startX, startY, endX, endY },
+        params,
       })
         .then((res) => res.data)
-        .then((trees) => setTrees(trees))
+        .then((trees) => {
+          if (trees.length === 1 && filterIpn) {
+            const tree = trees[0]
+            setCenter({ lng: tree.y, lat: tree.x })
+          }
+          setTrees(trees)
+        })
     },
-    [setTrees]
+    [setTrees, filterIpn]
   )
 
   const onDebounce = useMemo(
@@ -122,12 +140,15 @@ export const Map = ({ handleCreateTree }: any) => {
         onDebounce(() => {
           const newZoom = mapRef.current?.getZoom()
           const bounds = mapRef.current?.getBounds()?.toJSON()
-          bounds && newZoom && newZoom <= zoom && fetch(bounds)
+          if (bounds && newZoom && newZoom <= zoom) {
+            fetch(bounds, filterIpn)
+            setFilterIpn(null)
+          }
           newZoom && setZoom(newZoom)
         })
       }
     },
-    [onDebounce, fetch, zoom]
+    [onDebounce, fetch, zoom, filterIpn]
   )
 
   const openCreateTree = useCallback(() => {
@@ -139,6 +160,10 @@ export const Map = ({ handleCreateTree }: any) => {
     setClickXY(null)
     setCreateTreeLatLng(null)
   }, [center, navigate])
+
+  useEffect(() => {
+    fetch(null, filterIpn)
+  }, [filterIpn])
 
   return (
     <Container>
@@ -200,7 +225,7 @@ export const Map = ({ handleCreateTree }: any) => {
                               fillColor: treeStatusColorsMap[tree.state],
                               strokeWeight: 1,
                               fillOpacity: 0.7,
-                              visible: true
+                              visible: true,
                             }}
                           />
                         }

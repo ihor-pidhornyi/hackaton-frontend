@@ -23,7 +23,7 @@ export const Container = styled.div(
 
 export const Image = styled.img(
   css({
-    minWidth: '135px',
+    width: '100%',
     minHeight: '135px',
     borderRadius: '19px',
   })
