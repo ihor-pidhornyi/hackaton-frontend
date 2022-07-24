@@ -18,7 +18,7 @@ import {
   RemoveIcon,
   Wrapper,
 } from './CreateTreeForm.styled'
-import { createTreeFormFields } from '../../shared/consts/createTreeFormFields'
+import { createTreeFormFields } from '../../shared/consts/create-tree-form-fields'
 
 enum States {
   healthy = 'HEALTHY',

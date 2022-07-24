@@ -10,7 +10,7 @@ import { ErrorMessage } from '@hookform/error-message'
 import { toast } from 'react-toastify'
 import api from '../../shared/services/api'
 import { AxiosError } from 'axios'
-import { registerFields } from '../../shared/consts/registerForm'
+import { registerFields } from '../../shared/consts/register-form'
 
 type FormData = {
   name: string
