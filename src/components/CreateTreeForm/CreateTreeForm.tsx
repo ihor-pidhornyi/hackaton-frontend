@@ -136,7 +136,6 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
       const input = getInput()
       if (input) input.value = ''
       setImageUrl(null)
-      handleClose(true)
       toast.success('Created Tree')
     } catch (error: unknown) {
       let message
@@ -146,8 +145,8 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
     }
   }
 
-  const handleClose = (refetch = false) => {
-    onClose(refetch)
+  const handleClose = () => {
+    onClose('')
   }
 
   const getLabelById = useCallback(

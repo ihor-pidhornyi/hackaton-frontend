@@ -34,7 +34,7 @@ export default function HomePage() {
     [setOpenCreate, setCoords]
   )
 
-  const handleClose = useCallback((refetch: boolean) => {
+  const handleClose = useCallback((value: string) => {
     setOpenCreate(false)
     setCoords(undefined)
   }, [setCoords, setOpenCreate])
@@ -57,7 +57,7 @@ export default function HomePage() {
           <CreateTreeForm
             coords={coords}
             open={openCreate}
-            onClose={(refetch: boolean) => handleClose(refetch)}
+            onClose={handleClose}
           />
         )}
 
