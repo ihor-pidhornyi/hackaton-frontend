@@ -41,7 +41,7 @@ function LoginPage() {
       localStorage.setItem('token', JSON.stringify(token))
       setToken(token)
 
-      navigate('/users')
+      navigate('/')
       reset()
       toast.success('Logged')
     } catch (e: unknown) {

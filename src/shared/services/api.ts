@@ -4,18 +4,16 @@ const client = axios.create({
   baseURL: `http://dev.roman-ko.net/`,
 })
 
-// client.interceptors.request.use(async (config) => {
-//   const token = JSON.parse(localStorage.getItem('token') || JSON.stringify(null)) as string | null
-//   if (token) {
-//     config.headers = {
-//       'Authorization': 'Bearer ' + token
-//     }
-//   }
-//   return config
-// }, error => {
-//   Promise.reject(error)
-// })
-
-// client.interceptors.response.use((config) => config, error => Promise.reject(error))
+client.interceptors.request.use(async (config) => {
+  const token = JSON.parse(localStorage.getItem('token') || JSON.stringify(null)) as string | null
+  if (token) {
+    config.headers = {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+  return config
+}, error => {
+  Promise.reject(error)
+})
 
 export default client

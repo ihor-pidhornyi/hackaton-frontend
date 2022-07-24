@@ -4,10 +4,16 @@ export type Tree = {
   x: number,
   y: number,
   radius: number,
-  birthDate: number,
+  // Datetime string
+  birthDate: string,
   photoUrl?: string,
+  type: {
+    name: string,
+    description: string
+  },
   tasks: Array<{
     id: number,
+    name: string,
     status: string,
   }>
 }

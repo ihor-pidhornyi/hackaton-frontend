@@ -1,17 +1,15 @@
-import React from 'react'
-import { Button } from '@mui/material'
+import React, { useCallback } from 'react'
 import CreateTreeForm from '../../components/CreateTreeForm/CreateTreeForm'
 import { Map } from '../../components/Map/Map'
 import { useJsApiLoader } from '@react-google-maps/api'
 import { useParams } from 'react-router-dom'
 import SideBar from '../../components/SideBar/SideBar'
 import { Coordinates } from '../../shared/models/coordinates'
+import { libraries } from '../../shared/consts/google-maps-libraries'
+import { useGlobalContext } from '../../shared/context/GlobalContext'
+import { TreeShortModal } from '../../components/TreeShortModal/TreeShortModal'
 
 const API_KEY = process.env.REACT_APP_API_KEY
-
-const libraries: [
-  'places' | 'drawing' | 'geometry' | 'localContext' | 'visualization'
-] = ['places']
 
 export default function HomePage() {
   const { isLoaded } = useJsApiLoader({
@@ -23,18 +21,27 @@ export default function HomePage() {
   const params = useParams()
 
   const [coords, setCoords] = React.useState<Coordinates | undefined>(undefined)
-  const [open, setOpen] = React.useState(false)
+  const [openCreate, setOpenCreate] = React.useState(false)
+  const { selectedTree, setSelectedTree } = useGlobalContext()
 
-  const handleClickOpen = (coordinates?: Coordinates) => {
-    if (coordinates) {
-      setOpen(true)
-      setCoords(coordinates)
-    }
-  }
+  const handleClickOpen = useCallback(
+    (coordinates?: Coordinates) => {
+      if (coordinates) {
+        setOpenCreate(true)
+        setCoords(coordinates)
+      }
+    },
+    [setOpenCreate, setCoords]
+  )
 
-  const handleClose = () => {
-    setOpen(false)
-  }
+  const handleClose = useCallback(() => {
+    setOpenCreate(false)
+    setCoords(undefined)
+  }, [setCoords, setOpenCreate])
+
+  const handleCloseTree = useCallback(() => {
+    setSelectedTree(null)
+  }, [setSelectedTree])
 
   return (
     <div>
@@ -45,10 +52,22 @@ export default function HomePage() {
         <h2>Loading...</h2>
       )}
 
-      <div className="App">
-        <div>
-          {coords && <CreateTreeForm coords={coords} open={open} onClose={handleClose} />}
-        </div>
+      <div>
+        {coords && (
+          <CreateTreeForm
+            coords={coords}
+            open={openCreate}
+            onClose={handleClose}
+          />
+        )}
+
+        {selectedTree && (
+          <TreeShortModal
+            tree={selectedTree}
+            open={!!selectedTree}
+            close={handleCloseTree}
+          />
+        )}
       </div>
     </div>
   )

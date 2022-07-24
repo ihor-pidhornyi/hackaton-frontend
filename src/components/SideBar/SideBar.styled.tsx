@@ -82,14 +82,14 @@ export const CharacteristicItem = styled.p(
   })
 )
 
-export const Description = styled.div(
-  css({
-    fontWeight: '300',
-    fontSize: '10px',
-    lineHeight: '14px',
-    margin: '0',
-  })
-)
+// export const Description = styled.div(
+//   css({
+//     fontWeight: '300',
+//     fontSize: '10px',
+//     lineHeight: '14px',
+//     margin: '0',
+//   })
+// )
 
 export const ArrowLeft = styled(TbArrowBarToLeft)(
   css({
