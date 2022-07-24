@@ -43,6 +43,7 @@ export const Card = styled.div(
     background: 'rgba(255, 255, 255, 0.5)',
     borderRadius: '16px',
     boxShadow: '1px 1px 14px -2px rgba(34, 60, 80, 0.5)',
+    cursor: 'pointer',
   })
 )
 
@@ -81,15 +82,6 @@ export const CharacteristicItem = styled.p(
     lineHeight: '15px',
   })
 )
-
-// export const Description = styled.div(
-//   css({
-//     fontWeight: '300',
-//     fontSize: '10px',
-//     lineHeight: '14px',
-//     margin: '0',
-//   })
-// )
 
 export const ArrowLeft = styled(TbArrowBarToLeft)(
   css({

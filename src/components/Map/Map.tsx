@@ -199,6 +199,7 @@ export const Map = ({ handleCreateTree }: any) => {
                         children={
                           <Circle
                             key={index}
+                            onClick={() => navigate(`/tree/${tree.id}`)}
                             center={{ lng: tree.y, lat: tree.x }}
                             radius={tree.radius}
                             options={{

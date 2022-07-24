@@ -13,8 +13,11 @@ import {
 } from './SideBar.styled'
 import { treeStatusMap } from '../../shared/consts/treeStatusMap'
 import { TREES } from '../../shared/consts/trees'
+import { useNavigate } from 'react-router-dom'
 
 function SideBar() {
+  const navigate = useNavigate()
+
   const [isActive, setIsActive] = useState(false)
 
   const activate = () => {
@@ -24,14 +27,14 @@ function SideBar() {
   return (
     <SideBarWrapper isActive={isActive}>
       {isActive &&
-        TREES.map((el) => (
-          <Card key={el.id}>
-            <Image backgroundImage={el.photoUrl ?? 'img/image-placeholder.jpg'} />
+        TREES.map((tree) => (
+          <Card key={tree.id} onClick={() => navigate(`/tree/${tree.id}/`)}>
+            <Image backgroundImage={tree.photoUrl ?? 'img/image-placeholder.jpg'} />
             <Content>
-              <Name>{`Реєстраційний номер: ${el.registrationNumber}`}</Name>
+              <Name>{`Реєстраційний номер: ${tree.registrationNumber}`}</Name>
               <Characteristiscs>
-                <CharacteristicItem>{`Радіус: ${el.radius} м`}</CharacteristicItem>
-                <CharacteristicItem>{`Стан: ${treeStatusMap[el.state]} `}</CharacteristicItem>
+                <CharacteristicItem>{`Радіус: ${tree.radius} м`}</CharacteristicItem>
+                <CharacteristicItem>{`Стан: ${treeStatusMap[tree.state]} `}</CharacteristicItem>
               </Characteristiscs>
             </Content>
           </Card>
