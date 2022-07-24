@@ -1,6 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { TreesLong } from '../../shared/consts/trees'
 import { treeStatusMap } from '../../shared/consts/treeStatusMap'
 import {
   CharacteristicItem,
@@ -14,12 +13,19 @@ import {
   Tasks,
   Wrapper,
 } from './TreesPage.styled'
+import API from '../../shared/services/api'
+import { Tree } from '../../shared/models/tree'
 
 export default function TreePage() {
   const navigate = useNavigate()
 
   const { id } = useParams()
-  const tree = TreesLong.find((el) => id && el.id === parseInt(id))
+  const [tree, setTree] = useState<Tree | null>(null)
+
+  useEffect(() => {
+    const getTrees = async () => await API.get<Tree>(`/trees/${id}`)
+    getTrees().then((res) => setTree(res.data))
+  }, [])
 
   return (
     <Wrapper>
