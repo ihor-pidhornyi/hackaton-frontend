@@ -23,6 +23,7 @@ import { Coordinates } from '../../shared/models/coordinates'
 import { useGlobalContext } from '../../shared/context/GlobalContext'
 import { TreeStatus } from '../../shared/models/tree-status'
 import { treeStatusMap } from '../../shared/consts/treeStatusMap'
+import API from '../../shared/services/api'
 
 type FormData = {
   radius: string
@@ -87,35 +88,55 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
     setImageUrl(null)
   }
 
-  const getCurrentDateString = useCallback((): string => {
-    const date = new Date()
-    const pretify = (value: number): string => {
-      return value < 10 ? `0${value}` : value.toString()
-    }
-    return `${pretify(date.getFullYear())}-${pretify(date.getMonth() + 1)}-${pretify(date.getDate())}`
-  }, [])
+  const getDateString = useCallback(
+    (date = new Date(), withTime = false): string => {
+      const pretify = (value: number): string => {
+        return value < 10 ? `0${value}` : value.toString()
+      }
+
+      return (
+        `${pretify(date.getFullYear())}-${pretify(
+          date.getMonth() + 1
+        )}-${pretify(date.getDate())}` +
+        (withTime
+          ? ` ${pretify(date.getHours())}:${pretify(
+              date.getMinutes()
+            )}:${pretify(date.getSeconds())}`
+          : '')
+      )
+    },
+    []
+  )
 
   const submit = async (data: FormData) => {
     try {
       const formData = new FormData()
 
-      formData.append('lat', coords.lat.toString())
-      formData.append('lng', coords.lng.toString())
+      console.log(getDateString(new Date(data.birthDate), true))
+      formData.append('x', coords.lat.toString())
+      formData.append('y', coords.lng.toString())
       formData.append('radius', data.radius)
       formData.append('state', data.state)
-      formData.append('typeId', data.typeId)
-      formData.append('birthDate', data.birthDate)
+      formData.append('type.id', data.typeId)
+      formData.append(
+        'birthDate',
+        getDateString(new Date(data.birthDate), true)
+      )
+      data.tasks.forEach((taskId, index) => {
+        formData.append(`tasks[${index}].id`, taskId.toString())
+      })
 
       const file = getFile()
       file && formData.append('photo', file)
 
-
+      const res = await API.post('/trees', formData)
+      const resData = res.data
 
       reset()
       const input = getInput()
       if (input) input.value = ''
       setImageUrl(null)
-
+      handleClose(true)
       toast.success('Created Tree')
     } catch (error: unknown) {
       let message
@@ -125,16 +146,19 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
     }
   }
 
-  const handleClose = () => {
-    onClose('')
+  const handleClose = (refetch = false) => {
+    onClose(refetch)
   }
 
-  const getLabelById = useCallback((id: number): string | null => {
-    return tasks.find(task => task.id === id)?.name ?? null
-  }, [tasks])
+  const getLabelById = useCallback(
+    (id: number): string | null => {
+      return tasks.find((task) => task.id === id)?.name ?? null
+    },
+    [tasks]
+  )
 
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog onClose={() => handleClose()} open={open}>
       <Wrapper>
         <div className="half">
           <form className="form" onSubmit={handleSubmit(submit)}>
@@ -178,7 +202,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'birthDate'}
-                defaultValue={getCurrentDateString()}
+                defaultValue={getDateString()}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField
@@ -250,7 +274,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
                     onChange={(event, newValue) => {
                       onChange(newValue)
                     }}
-                    options={tasks.map(task => task.id)}
+                    options={tasks.map((task) => task.id)}
                     getOptionLabel={(option) => getLabelById(option) ?? ''}
                     renderTags={(tagValue, getTagProps) =>
                       tagValue.map((option, index) => (
@@ -262,10 +286,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
                       ))
                     }
                     renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Завдання"
-                      />
+                      <TextField {...params} label="Завдання" />
                     )}
                   />
                 )}

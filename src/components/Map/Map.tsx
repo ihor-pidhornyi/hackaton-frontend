@@ -11,10 +11,10 @@ import { defaultTheme } from './Theme'
 import { useNavigate } from 'react-router-dom'
 import { Button, debounce } from '@mui/material'
 import { TreeShort } from '../../shared/models/tree-short'
-import { TREES } from '../../shared/consts/trees'
 import { MapsAutocomplete } from '../MapsAutocomplete/MapsAutocomplete'
 import { treeStatusColorsMap } from '../../shared/consts/treeStatusColorsMap'
 import API from '../../shared/services/api'
+import { useGlobalContext } from '../../shared/context/GlobalContext'
 
 const containerStyle = {
   width: '100%',
@@ -42,7 +42,7 @@ const defaultOptions = {
 }
 
 export const Map = ({ handleCreateTree }: any) => {
-  const [trees, setTrees] = useState<TreeShort[]>([])
+  const { trees, setTrees } = useGlobalContext()
   const mapRef = useRef<google.maps.Map | undefined>(undefined)
   const [createTreeLatLng, setCreateTreeLatLng] =
     useState<google.maps.LatLng | null>(null)
@@ -75,10 +75,10 @@ export const Map = ({ handleCreateTree }: any) => {
   const fetch = useCallback(
     (bounds: google.maps.LatLngBoundsLiteral) => {
 
-      const startX = Math.min(bounds.west, bounds.east)
-      const startY= Math.min(bounds.north, bounds.south)
-      const endX = Math.max(bounds.west, bounds.east)
-      const endY = Math.max(bounds.north, bounds.south)
+      const startY = Math.min(bounds.west, bounds.east)
+      const startX= Math.min(bounds.north, bounds.south)
+      const endY = Math.max(bounds.west, bounds.east)
+      const endX = Math.max(bounds.north, bounds.south)
 
       API.get<TreeShort[]>('/trees', {
         params: { startX, startY, endX, endY },
@@ -122,7 +122,7 @@ export const Map = ({ handleCreateTree }: any) => {
         onDebounce(() => {
           const newZoom = mapRef.current?.getZoom()
           const bounds = mapRef.current?.getBounds()?.toJSON()
-          bounds && newZoom && newZoom < zoom && fetch(bounds)
+          bounds && newZoom && newZoom <= zoom && fetch(bounds)
           newZoom && setZoom(newZoom)
         })
       }
@@ -139,12 +139,6 @@ export const Map = ({ handleCreateTree }: any) => {
     setClickXY(null)
     setCreateTreeLatLng(null)
   }, [center, navigate])
-
-  useEffect(() => {
-    setTimeout(() => {
-      setTrees([...TREES])
-    }, 2000)
-  }, [])
 
   return (
     <Container>

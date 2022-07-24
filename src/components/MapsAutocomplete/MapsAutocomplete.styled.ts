@@ -6,6 +6,7 @@ export const SearchIcon = styled(BsSearch)(
   css({
     width: '22px',
     height: '22px',
+    paddingRight: '10px'
   })
 )
 

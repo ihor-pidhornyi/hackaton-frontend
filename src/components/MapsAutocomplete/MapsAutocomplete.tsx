@@ -166,7 +166,7 @@ export const MapsAutocomplete = ({
                     </span>
                   ))
                 }
-                <Typography variant="body2" color="text.secondary">ивифвфи
+                <Typography variant="body2" color="text.secondary">
                   {option.structured_formatting.secondary_text}
                 </Typography>
               </Grid>

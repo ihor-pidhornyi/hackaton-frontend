@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -12,11 +12,12 @@ import {
   SideBarWrapper,
 } from './SideBar.styled'
 import { treeStatusMap } from '../../shared/consts/treeStatusMap'
-import { TREES } from '../../shared/consts/trees'
 import { useNavigate } from 'react-router-dom'
+import { useGlobalContext } from '../../shared/context/GlobalContext'
 
 function SideBar() {
   const navigate = useNavigate()
+  const { trees } = useGlobalContext()
 
   const [isActive, setIsActive] = useState(false)
 
@@ -24,10 +25,14 @@ function SideBar() {
     setIsActive(!isActive)
   }
 
+  useEffect(() => {
+    setIsActive(true)
+  }, [])
+
   return (
     <SideBarWrapper isActive={isActive}>
       {isActive &&
-        TREES.map((tree) => (
+        trees.map((tree) => (
           <Card key={tree.id} onClick={() => navigate(`/tree/${tree.id}/`)}>
             <Image backgroundImage={tree.photoUrl ?? 'img/image-placeholder.jpg'} />
             <Content>
