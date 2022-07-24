@@ -19,6 +19,7 @@ import {
   Wrapper,
 } from './CreateTreeForm.styled'
 import { createTreeFormFields } from '../../shared/consts/create-tree-form-fields'
+import { Coordinates } from '../../shared/models/coordinates'
 
 enum States {
   healthy = 'HEALTHY',
@@ -54,8 +55,6 @@ type Task = {
 }
 
 type FormData = {
-  // x: string;
-  // y: string;
   radius: string
   typeId: string
   birthDate: string
@@ -66,11 +65,12 @@ type FormData = {
 export interface ICreateTreeForm {
   open: boolean
   onClose: (value: string) => void
+  coords: Coordinates
 }
 
 const MAX_FILE_SIZE = 1024 * 1024 * 5
 
-function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
+function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
 
   const inputEl = useRef<HTMLInputElement | null>(null)
@@ -120,8 +120,8 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
     try {
       const formData = new FormData()
 
-      // formData.append("x", data.x);
-      // formData.append("y", data.y);
+      formData.append('lat', coords.lat.toString())
+      formData.append('lng', coords.lng.toString())
       formData.append('radius', data.radius)
       formData.append('state', data.state)
       formData.append('typeId', data.typeId)
@@ -154,6 +154,12 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
         <div className="half">
           <form className="form" onSubmit={handleSubmit(submit)}>
             <h2 className="title">Add tree</h2>
+            <label className="form-item">
+              <p>Lattitude: {coords.lat}</p>
+            </label>
+            <label className="form-item">
+              <p>Longtitude: {coords.lng}</p>
+            </label>
             {createTreeFormFields.map((el) => (
               <label key={el.name} className="form-item">
                 <Controller
@@ -191,7 +197,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField
-                    label="Birth date"
+                    label="Дата народження"
                     variant="standard"
                     type="date"
                     onChange={onChange}
@@ -211,7 +217,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                   <Select
                     fullWidth={true}
                     value={value}
-                    label="State"
+                    label="Статус"
                     onChange={onChange}
                   >
                     {Object.values(States).map((el) => (
@@ -233,7 +239,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                   <Select
                     fullWidth={true}
                     value={value}
-                    label="Type of tree"
+                    label="Тип дерева"
                     onChange={onChange}
                   >
                     {types.map((type) => (
@@ -273,8 +279,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label="Fixed tag"
-                        placeholder="Favorites"
+                        label="Завдання"
                       />
                     )}
                   />
@@ -283,7 +288,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
             </label>
 
             <label className="form-item">
-              <div className="file-label">Upload a tree photo (Optional):</div>
+              <div className="file-label">Додати фото (Опціонально):</div>
               <div className="file-content">
                 <div className="preview">
                   <img
@@ -322,7 +327,7 @@ function CreateTreeForm({ open, onClose }: ICreateTreeForm) {
                 marginTop: '35px',
               }}
             >
-              Add
+              Додати
             </Button>
           </form>
         </div>

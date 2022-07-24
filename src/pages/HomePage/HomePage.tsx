@@ -5,6 +5,7 @@ import { Map } from '../../components/Map/Map'
 import { useJsApiLoader } from '@react-google-maps/api'
 import { useParams } from 'react-router-dom'
 import SideBar from '../../components/SideBar/SideBar'
+import { Coordinates } from '../../shared/models/coordinates'
 
 const API_KEY = process.env.REACT_APP_API_KEY
 
@@ -21,12 +22,14 @@ export default function HomePage() {
 
   const params = useParams()
 
-  console.log('params', params)
-
+  const [coords, setCoords] = React.useState<Coordinates | undefined>(undefined)
   const [open, setOpen] = React.useState(false)
 
-  const handleClickOpen = () => {
-    setOpen(true)
+  const handleClickOpen = (coordinates?: Coordinates) => {
+    if (coordinates) {
+      setOpen(true)
+      setCoords(coordinates)
+    }
   }
 
   const handleClose = () => {
@@ -36,20 +39,15 @@ export default function HomePage() {
   return (
     <div>
       <SideBar />
-      {isLoaded ? <Map /> : <h2>Loading...</h2>}
+      {isLoaded ? (
+        <Map handleCreateTree={handleClickOpen} />
+      ) : (
+        <h2>Loading...</h2>
+      )}
 
       <div className="App">
-        <h1>Hello we are 4 vesla</h1>
-
         <div>
-          <Button
-            color={'primary'}
-            variant="outlined"
-            onClick={handleClickOpen}
-          >
-            Open simple dialog
-          </Button>
-          <CreateTreeForm open={open} onClose={handleClose} />
+          {coords && <CreateTreeForm coords={coords} open={open} onClose={handleClose} />}
         </div>
       </div>
     </div>

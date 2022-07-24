@@ -27,7 +27,7 @@ const defaultOptions = {
   styles: defaultTheme,
 }
 
-export const Map = () => {
+export const Map = ({ handleCreateTree }: any) => {
   const mapRef = useRef<google.maps.Map | undefined>(undefined)
   const [createTreeLatLng, setCreateTreeLatLng] =
     useState<google.maps.LatLng | null>(null)
@@ -99,12 +99,9 @@ export const Map = () => {
     [onDebounce]
   )
 
-  const openCreateTree = useCallback(
-    function callback() {
-      console.log(createTreeLatLng)
-    },
-    [createTreeLatLng]
-  )
+  const openCreateTree = useCallback(() => {
+    handleCreateTree(createTreeLatLng?.toJSON())
+  }, [createTreeLatLng, handleCreateTree])
 
   useEffect(() => {
     navigate('/' + center.lat + ',' + center.lng)
@@ -123,7 +120,12 @@ export const Map = () => {
             sx={{
               marginLeft: '.5rem',
               height: '40px',
-              display: 'inline-block'
+              padding: '6px 12px 6px 8px',
+              display: 'inline-block',
+              minWidth: '0px',
+              span: {
+                marginLeft: '0',
+              },
             }}
             endIcon={<CloseButton />}
             onClick={() => {

@@ -7,6 +7,7 @@ export const Wrapper = styled.div(
   css({
     display: 'flex',
     alignItems: 'center',
+    width: '460px',
 
     '.half': {
       flex: '1 0 50%',
