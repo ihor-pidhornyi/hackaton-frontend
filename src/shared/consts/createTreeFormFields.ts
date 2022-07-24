@@ -11,7 +11,7 @@ export const createTreeFormFields: field[] = [
     name: 'radius',
     type: 'text',
     defaultValue: '',
-    helpText: 'Tree radius',
+    helpText: 'Радіус дерева',
     validation: {
       required: 'This field is required',
       pattern: {
