@@ -36,7 +36,7 @@ function RegisterPage() {
         return
       }
 
-      formData.append('full_name', data.name)
+      formData.append('fullName', data.name)
       formData.append('email', data.email)
       formData.append('password', data.password)
 
