@@ -20,19 +20,19 @@ const GlobalContext = createContext<{
   setTasks: (value: Task[]) => void
   treeTypes: TreeType[]
   setTreeTypes: (value: TreeType[]) => void
+  trees: TreeShort[]
+  setTrees: (value: TreeShort[]) => void
 }>({
   token: null,
-  setToken: (_) => {
-  },
+  setToken: (_) => {},
   selectedTree: null,
-  setSelectedTree: (_) => {
-  },
+  setSelectedTree: (_) => {},
   tasks: [],
-  setTasks: (_) => {
-  },
+  setTasks: (_) => {},
   treeTypes: [],
-  setTreeTypes: (_) => {
-  },
+  setTreeTypes: (_) => {},
+  trees: [],
+  setTrees: (_) => {}
 })
 
 export function GlobalContextProvider({ children }: { children: ReactNode }) {
@@ -40,6 +40,7 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
   const [selectedTree, setSelectedTree] = useState<TreeShort | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [treeTypes, setTreeTypes] = useState<TreeType[]>([])
+  const [trees, setTrees] = useState<TreeShort[]>([])
 
   useEffect(() => {
     setToken(JSON.parse(localStorage.getItem('token') ?? JSON.stringify(null)))
@@ -61,8 +62,21 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
       setTasks,
       treeTypes,
       setTreeTypes,
+      trees,
+      setTrees,
     }),
-    [token, setToken, selectedTree, setSelectedTree, tasks, setTasks, treeTypes, setTreeTypes],
+    [
+      token,
+      setToken,
+      selectedTree,
+      setSelectedTree,
+      tasks,
+      setTasks,
+      treeTypes,
+      setTreeTypes,
+      trees,
+      setTrees,
+    ]
   )
 
   return (

@@ -5,7 +5,9 @@ import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb'
 export const SideBarWrapper = styled.div(({ isActive }: any) =>
   css({
     boxSizing: 'border-box',
-    position: 'absolute',
+    position: 'fixed',
+    maxHeight: '100vh',
+    overflowY: 'scroll',
     left: '0px',
     top: '0px',
     display: 'flex',
