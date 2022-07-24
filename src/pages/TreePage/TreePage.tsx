@@ -32,7 +32,7 @@ export default function TreePage() {
       {tree ? (
         <Container>
           <ReturnButton onClick={() => navigate(-1)} />
-          <Image src={tree.photoUrl} />
+          <Image src={tree.photoUrl ?? 'img/image-placeholder.jpg'} />
           <Content>
             <Name>{`Реєстраційний номер: ${tree.registrationNumber}`}</Name>
             <Characteristiscs>
