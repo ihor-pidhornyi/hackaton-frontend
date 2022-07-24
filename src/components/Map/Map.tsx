@@ -74,16 +74,17 @@ export const Map = ({ handleCreateTree }: any) => {
 
   const fetch = useCallback(
     (bounds: google.maps.LatLngBoundsLiteral) => {
-      const formData = new FormData()
 
-      formData.append('startX', Math.min(bounds.west, bounds.east) + '')
-      formData.append('startY', Math.min(bounds.north, bounds.south) + '')
-      formData.append('endX', Math.max(bounds.west, bounds.east) + '')
-      formData.append('endY', Math.max(bounds.north, bounds.south) + '')
+      const startX = Math.min(bounds.west, bounds.east)
+      const startY= Math.min(bounds.north, bounds.south)
+      const endX = Math.max(bounds.west, bounds.east)
+      const endY = Math.max(bounds.north, bounds.south)
 
-      API.request({ method: 'GET', data: formData, url: '/trees' })
+      API.get<TreeShort[]>('/trees', {
+        params: { startX, startY, endX, endY },
+      })
         .then((res) => res.data)
-        .then(console.log)
+        .then((trees) => setTrees(trees))
     },
     [setTrees]
   )
@@ -119,15 +120,14 @@ export const Map = ({ handleCreateTree }: any) => {
     function callback() {
       if (mapRef.current) {
         onDebounce(() => {
-          const zoom = mapRef.current?.getZoom()
-          zoom && setZoom(zoom)
-          console.log('wtf')
+          const newZoom = mapRef.current?.getZoom()
           const bounds = mapRef.current?.getBounds()?.toJSON()
-          bounds && fetch(bounds)
+          bounds && newZoom && newZoom < zoom && fetch(bounds)
+          newZoom && setZoom(newZoom)
         })
       }
     },
-    [onDebounce]
+    [onDebounce, fetch, zoom]
   )
 
   const openCreateTree = useCallback(() => {
@@ -205,7 +205,7 @@ export const Map = ({ handleCreateTree }: any) => {
                               fillColor: treeStatusColorsMap[tree.state],
                               strokeWeight: 1,
                               fillOpacity: 0.7,
-                              visible: zoom >= 15,
+                              visible: true
                             }}
                           />
                         }

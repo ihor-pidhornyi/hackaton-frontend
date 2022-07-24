@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import {
   Autocomplete,
   Button,
@@ -20,45 +20,15 @@ import {
 } from './CreateTreeForm.styled'
 import { createTreeFormFields } from '../../shared/consts/create-tree-form-fields'
 import { Coordinates } from '../../shared/models/coordinates'
-
-enum States {
-  healthy = 'HEALTHY',
-  ill = 'ILL',
-  bad = 'BAD',
-}
-
-const types = [
-  {
-    id: '1',
-    name: 'Клен',
-  },
-  {
-    id: '2',
-    name: 'Дуб',
-  },
-  {
-    id: '3',
-    name: 'Верба',
-  },
-]
-
-const tasks1 = [432, 4123, 423423, 423, 342, 324]
-
-type Type = {
-  description: string
-  name: string
-}
-
-type Task = {
-  id: number
-  name: string
-}
+import { useGlobalContext } from '../../shared/context/GlobalContext'
+import { TreeStatus } from '../../shared/models/tree-status'
+import { treeStatusMap } from '../../shared/consts/treeStatusMap'
 
 type FormData = {
   radius: string
   typeId: string
   birthDate: string
-  state: States
+  state: TreeStatus
   tasks: number[]
 }
 
@@ -72,6 +42,7 @@ const MAX_FILE_SIZE = 1024 * 1024 * 5
 
 function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const { tasks, treeTypes } = useGlobalContext()
 
   const inputEl = useRef<HTMLInputElement | null>(null)
   const {
@@ -116,6 +87,14 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
     setImageUrl(null)
   }
 
+  const getCurrentDateString = useCallback((): string => {
+    const date = new Date()
+    const pretify = (value: number): string => {
+      return value < 10 ? `0${value}` : value.toString()
+    }
+    return `${pretify(date.getFullYear())}-${pretify(date.getMonth() + 1)}-${pretify(date.getDate())}`
+  }, [])
+
   const submit = async (data: FormData) => {
     try {
       const formData = new FormData()
@@ -129,6 +108,8 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
 
       const file = getFile()
       file && formData.append('photo', file)
+
+
 
       reset()
       const input = getInput()
@@ -148,17 +129,21 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
     onClose('')
   }
 
+  const getLabelById = useCallback((id: number): string | null => {
+    return tasks.find(task => task.id === id)?.name ?? null
+  }, [tasks])
+
   return (
     <Dialog onClose={handleClose} open={open}>
       <Wrapper>
         <div className="half">
           <form className="form" onSubmit={handleSubmit(submit)}>
-            <h2 className="title">Add tree</h2>
+            <h2 className="title">Додати дерево</h2>
             <label className="form-item">
-              <p>Lattitude: {coords.lat}</p>
+              <p>Широта: {coords.lat}</p>
             </label>
             <label className="form-item">
-              <p>Longtitude: {coords.lng}</p>
+              <p>Довгота: {coords.lng}</p>
             </label>
             {createTreeFormFields.map((el) => (
               <label key={el.name} className="form-item">
@@ -193,7 +178,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'birthDate'}
-                defaultValue={'2003-05-24'}
+                defaultValue={getCurrentDateString()}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField
@@ -211,7 +196,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'state'}
-                defaultValue={States.bad}
+                defaultValue={TreeStatus.HEALTHY}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Select
@@ -220,9 +205,9 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
                     label="Статус"
                     onChange={onChange}
                   >
-                    {Object.values(States).map((el) => (
+                    {Object.values<TreeStatus>(TreeStatus).map((el) => (
                       <MenuItem key={el} value={el}>
-                        {el}
+                        {treeStatusMap[el]}
                       </MenuItem>
                     ))}
                   </Select>
@@ -233,7 +218,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'typeId'}
-                defaultValue={types[0].id}
+                defaultValue={treeTypes[0].id + ''}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Select
@@ -242,7 +227,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
                     label="Тип дерева"
                     onChange={onChange}
                   >
-                    {types.map((type) => (
+                    {treeTypes.map((type) => (
                       <MenuItem key={type.id} value={type.id}>
                         {type.name}
                       </MenuItem>
@@ -255,7 +240,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'tasks'}
-                defaultValue={[tasks1[0]]}
+                defaultValue={[]}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Autocomplete
@@ -265,12 +250,12 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
                     onChange={(event, newValue) => {
                       onChange(newValue)
                     }}
-                    options={tasks1}
-                    getOptionLabel={(option) => option.toString()}
+                    options={tasks.map(task => task.id)}
+                    getOptionLabel={(option) => getLabelById(option) ?? ''}
                     renderTags={(tagValue, getTagProps) =>
                       tagValue.map((option, index) => (
                         <Chip
-                          label={option}
+                          label={getLabelById(option) ?? ''}
                           {...getTagProps({ index })}
                           key={index}
                         />

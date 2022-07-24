@@ -2,37 +2,68 @@ import {
   createContext,
   ReactNode,
   useContext,
-  useEffect, useMemo,
+  useEffect,
+  useMemo,
   useState,
 } from 'react'
 import { TreeShort } from '../models/tree-short'
+import API from '../services/api'
+import { Task } from '../models/task'
+import { TreeType } from '../models/tree-type'
 
 const GlobalContext = createContext<{
   token: string | null
   setToken: (token: string | null) => void
   selectedTree: TreeShort | null
   setSelectedTree: (tree: TreeShort | null) => void
+  tasks: Task[]
+  setTasks: (value: Task[]) => void
+  treeTypes: TreeType[]
+  setTreeTypes: (value: TreeType[]) => void
 }>({
   token: null,
-  setToken: (_) => {},
+  setToken: (_) => {
+  },
   selectedTree: null,
-  setSelectedTree: (_) => {}
+  setSelectedTree: (_) => {
+  },
+  tasks: [],
+  setTasks: (_) => {
+  },
+  treeTypes: [],
+  setTreeTypes: (_) => {
+  },
 })
 
 export function GlobalContextProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [selectedTree, setSelectedTree] = useState<TreeShort | null>(null)
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [treeTypes, setTreeTypes] = useState<TreeType[]>([])
 
   useEffect(() => {
     setToken(JSON.parse(localStorage.getItem('token') ?? JSON.stringify(null)))
+    API.get<Task[]>('/tree/tasks')
+      .then((res) => res.data)
+      .then((tasks) => setTasks(tasks))
+    API.get<TreeType[]>('/tree/types')
+      .then((res) => res.data)
+      .then((treeTypes) => setTreeTypes(treeTypes))
   }, [])
 
-  const sharedState = useMemo(() => ({
-    token,
-    setToken,
-    selectedTree,
-    setSelectedTree
-  }), [token, setToken, selectedTree, setSelectedTree])
+  const sharedState = useMemo(
+    () => ({
+      token,
+      setToken,
+      selectedTree,
+      setSelectedTree,
+      tasks,
+      setTasks,
+      treeTypes,
+      setTreeTypes,
+    }),
+    [token, setToken, selectedTree, setSelectedTree, tasks, setTasks, treeTypes, setTreeTypes],
+  )
 
   return (
     <GlobalContext.Provider value={sharedState}>
