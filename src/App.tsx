@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { GlobalContextProvider } from './shared/context/GlobalContext'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage/HomePage'
-import TreesPage from './pages/TreesPage/TreesPage'
+import TreePage from './pages/TreePage/TreePage'
 import RegisterPage from './pages/RegisterPage/RegisterPage'
 import LoginPage from './pages/LoginPage/LoginPage'
 
@@ -25,7 +25,7 @@ function App() {
       <GlobalContextProvider>
         <Router>
           <Routes>
-            <Route path="/trees" element={<TreesPage />} />
+            <Route path="/tree/:id" element={<TreePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/:x,:y" element={<HomePage />} />
