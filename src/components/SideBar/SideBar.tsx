@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -14,11 +14,21 @@ import {
 import { treeStatusMap } from '../../shared/consts/treeStatusMap'
 import { TREES } from '../../shared/consts/trees'
 import { useNavigate } from 'react-router-dom'
+import { Tree } from '../../shared/models/tree'
+import API from '../../shared/services/api'
+import { TreeShort } from '../../shared/models/tree-short'
 
 function SideBar() {
   const navigate = useNavigate()
 
   const [isActive, setIsActive] = useState(false)
+  const [trees, setTrees] = useState<TreeShort[] | null>(null)
+
+  useEffect(() => {
+    const getTrees = async () => await API.get<TreeShort[]>(`/trees/`)
+    getTrees().then((res) => setTrees(res.data))
+  }, [])
+
 
   const activate = () => {
     setIsActive(!isActive)
@@ -26,8 +36,8 @@ function SideBar() {
 
   return (
     <SideBarWrapper isActive={isActive}>
-      {isActive &&
-        TREES.map((tree) => (
+      {isActive && trees &&
+        trees.map((tree) => (
           <Card key={tree.id} onClick={() => navigate(`/tree/${tree.id}/`)}>
             <Image backgroundImage={tree.photoUrl ?? 'img/image-placeholder.jpg'} />
             <Content>
