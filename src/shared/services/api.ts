@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const client = axios.create({
-  baseURL: `http://dev.roman-ko.net`,
+  baseURL: `https://roman-ko.net`,
 })
 
 client.interceptors.request.use(async (config) => {

@@ -240,7 +240,7 @@ function CreateTreeForm({ open, onClose, coords }: ICreateTreeForm) {
             <label className="form-item">
               <Controller
                 name={'typeId'}
-                defaultValue={treeTypes[0].id + ''}
+                defaultValue={treeTypes[0]?.id + ''}
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <Select
